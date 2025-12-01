@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5cb2043c-da78-4c76-af49-17b58d5ae2b6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Config.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Config/DroneConfig.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Config/DroneConfig.cs.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Core/Simulation/DroneState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Core/Simulation/DroneState.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,12 +12,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Core/Config/DroneConfig.cs" root0="SKIP_HIGHLIGHTING" />
-  </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 5
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="36Asg2EsrK2DT3pvap3ADNHNm6A" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -34,7 +29,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Unity Attach To.Attach to.executor": "Debug",
-    "git-widget-placeholder": "feature/DSS-5-drone-config",
+    "git-widget-placeholder": "feature/DSS-7-drone-state",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -51,6 +46,7 @@
       <option name="presentableId" value="Default" />
       <updated>1764460818820</updated>
       <workItem from="1764460819573" duration="98000" />
+      <workItem from="1764553863393" duration="330000" />
     </task>
     <servers />
   </component>
