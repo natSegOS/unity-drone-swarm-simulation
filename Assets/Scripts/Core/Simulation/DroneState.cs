@@ -54,5 +54,20 @@ namespace DroneSwarmSimulation.Core.Simulation
                 this.forwardDirection = initialForwardDirection;
             }
         }
+
+        /// <summary>
+        /// Advances the drone's simulation state forward in time
+        /// For now, this simply moves the drone based on its current velocity
+        /// </summary>
+        /// <param name="deltaTimeSeconds">Amount of simulated time to advance, in seconds</param>
+        public void UpdateState(float deltaTimeSeconds)
+        {
+            this.positionMeters += this.velocityMetersPerSecond * deltaTimeSeconds;
+
+            if (velocityMetersPerSecond != Vector3.zero)
+            {
+                forwardDirection = velocityMetersPerSecond.normalized;
+            }
+        }
     }
 }
