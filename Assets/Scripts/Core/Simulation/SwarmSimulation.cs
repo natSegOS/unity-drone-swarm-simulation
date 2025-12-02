@@ -18,6 +18,9 @@ namespace DroneSwarmSimulation.Core.Simulation
         
         // small threshold used to avoid division by zero when drones are extremely close
         private const float minimumNeighborDistanceSquared = 0.0001f;
+        
+        // minimum speed used when aligning drones whose current speed is effectively zero
+        private const float minimumAlignmentSpeedMetersPerSecond = 0.1f;
 
         /// <summary>
         /// Adds an existing DroneState instance to the swarm
@@ -91,6 +94,62 @@ namespace DroneSwarmSimulation.Core.Simulation
                     accumulatedSeparation /= neighborCount;
                     currentDrone.velocityMetersPerSecond += accumulatedSeparation * separationStrength;
                 }
+            }
+        }
+        
+        /// <summary>
+        /// Applies a local alignment steering behavior to all drones in the swarm.
+        /// Drones will tend to align their direction of travel with nearby neighbors.
+        /// </summary>
+        /// <param name="alignmentRadiusMeters">Maximum distance at which neighbors influence alignment, in meters</param>
+        /// <param name="alignmentStrength">Scalar multiplier applied to alignment steering before adding to velocity</param>
+        public void ApplyAlignmentToAllDrones(float alignmentRadiusMeters, float alignmentStrength)
+        {
+            if (droneStates.Count == 0) return;
+            if (alignmentRadiusMeters <= 0f || alignmentStrength <= 0f) return;
+            
+            float alignmentRadiusSquared = alignmentRadiusMeters * alignmentRadiusMeters;
+            
+            for (int i = 0; i < droneStates.Count; i++)
+            {
+                DroneState currentDrone = droneStates[i];
+                Vector3 currentVelocity = currentDrone.velocityMetersPerSecond;
+                Vector3 currentPosition = currentDrone.positionMeters;
+                
+                Vector3 sumNeighborVelocities = Vector3.zero;
+                int neighborCount = 0;
+                
+                for (int j = 0; j < droneStates.Count; j++)
+                {
+                    if (j == i) continue;
+                    
+                    DroneState neighborDrone = droneStates[j];
+                    Vector3 offset = neighborDrone.positionMeters - currentPosition;
+                    float distanceSquared = offset.sqrMagnitude;
+                    
+                    if (distanceSquared > alignmentRadiusSquared || distanceSquared < minimumNeighborDistanceSquared) continue;
+                    
+                    sumNeighborVelocities += neighborDrone.velocityMetersPerSecond;
+                    neighborCount++;
+                }
+                
+                if (neighborCount == 0) continue;
+                
+                Vector3 averageVelocity = sumNeighborVelocities / neighborCount;
+                if (averageVelocity == Vector3.zero) continue;
+                
+                Vector3 desiredDirection = averageVelocity.normalized;
+                
+                float currentSpeedMetersPerSecond = currentVelocity.magnitude;
+                if (currentSpeedMetersPerSecond < minimumAlignmentSpeedMetersPerSecond)
+                {
+                    currentSpeedMetersPerSecond = minimumAlignmentSpeedMetersPerSecond;
+                }
+                
+                Vector3 desiredVelocity = desiredDirection * currentSpeedMetersPerSecond;
+                Vector3 alignmentSteering = desiredVelocity - currentVelocity;
+                
+                currentDrone.velocityMetersPerSecond += alignmentSteering * alignmentStrength;
             }
         }
 
