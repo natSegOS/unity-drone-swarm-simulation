@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using DroneSwarmSimulation.Core.Simulation;
 
@@ -32,10 +33,10 @@ namespace DroneSwarmSimulation.Presentation
         [Header("Test Movement - Orbit")]
         
         [Tooltip("Enable a simple orbiting test pattern around a fixed point")]
-        [SerialField]
+        [SerializeField]
         private bool enableOrbitTestPattern = true;
 
-        [Tooltiop("World-space center oint of the oribit, in meters")]
+        [Tooltip("World-space center oint of the oribit, in meters")]
         [SerializeField]
         private Vector3 orbitCenterPositionMeters = Vector3.zero;
 
@@ -65,16 +66,94 @@ namespace DroneSwarmSimulation.Presentation
                 initialVelocityMetersPerSecond,
                 initialForwardDirection
             );
+
+            if (enableOrbitTestPattern)
+            {
+                // Initialize orbit starting angle based on initial position
+                Vector3 flatFromCenter = transform.position - new Vector3(
+                    orbitCenterPositionMeters.x,
+                    transform.position.y,
+                    orbitCenterPositionMeters.z
+                );
+
+                if (flatFromCenter.sqrMagnitude > 0.0001f)
+                {
+                    currentOrbitAngleDegrees = Mathf.Atan2(flatFromCenter.x, flatFromCenter.z) * Mathf.Rad2Deg;
+                }
+                else
+                {
+                    currentOrbitAngleDegrees = 0f;
+                }
+            }
         }
 
         private void Update()
         {
             float deltaTimeSeconds = Time.deltaTime;
 
+            if (enableOrbitTestPattern)
+            {
+                UpdateOrbitTestPattern(deltaTimeSeconds);
+            }
+
             droneState.UpdateState(deltaTimeSeconds);
 
             transform.position = droneState.positionMeters;
             transform.forward = droneState.forwardDirection;
+        }
+
+        /// <summary>
+        /// Updates the drone's velocity and positino target to follow
+        /// a simple circular orbit around a fixed point in world space
+        /// </summary>
+        /// <param name="deltaTimeSeconds"></param>
+        private void UpdateOrbitTestPattern(float deltaTimeSeconds)
+        {
+            currentOrbitAngleDegrees += orbitAngularSpeedDegreesPerSecond * deltaTimeSeconds;
+            
+            // Keep the angle in [0, 360) range to avoid it growing unbounded
+            if (currentOrbitAngleDegrees >= 360f)
+            {
+                currentOrbitAngleDegrees -= 360f;
+            }
+
+            // Compute the desired position on orbit circle
+            float angleRadians = currentOrbitAngleDegrees * Mathf.Deg2Rad;
+
+            float offsetX = Mathf.Sin(angleRadians) * orbitRadiusMeters;
+            float offsetZ = Mathf.Cos(angleRadians) * orbitRadiusMeters;
+
+            Vector3 orbitCenterAtHeight = new Vector3(
+                orbitCenterPositionMeters.x,
+                orbitHeightMeters,
+                orbitCenterPositionMeters.z
+            );
+
+            Vector3 desiredPositionOnOrbit = orbitCenterAtHeight + new Vector3(offsetX, 0f, offsetZ);
+            
+            // Compute velocity that will move the drone toward desired position
+            Vector3 toTarget = desiredPositionOnOrbit - droneState.positionMeters;
+
+            // If very close to target, avoid tiny velocities
+            const float minimumDistanceBeforeMovingMeters = 0.01f;
+            if (toTarget.sqrMagnitude < minimumDistanceBeforeMovingMeters * minimumDistanceBeforeMovingMeters)
+            {
+                droneState.velocityMetersPerSecond = Vector3.zero;
+                return;
+            }
+            
+            Vector3 desiredDirection = toTarget.normalized;
+            
+            // Use existing speed or fall back to initial speed if nearly zero
+            float currentSpeedMetersPerSecond = droneState.velocityMetersPerSecond.magnitude;
+            float fallbackMetersPerSecond = initialVelocityMetersPerSecond.magnitude;
+
+            if (currentSpeedMetersPerSecond < 0.01f)
+            {
+                currentSpeedMetersPerSecond = fallbackMetersPerSecond;
+            }
+            
+            droneState.velocityMetersPerSecond = desiredDirection * currentSpeedMetersPerSecond;
         }
     }
 }
