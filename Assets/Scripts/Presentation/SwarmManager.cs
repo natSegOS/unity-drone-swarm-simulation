@@ -137,6 +137,15 @@ namespace DroneSwarmSimulation.Presentation
             if (swarmSimulation == null) return;
 
             float deltaTimeSeconds = Time.deltaTime;
+
+            swarmSimulation.ApplyFlockingToAllDrones(
+                separationRadiusMeters,
+                separationStrength,
+                alignmentRadiusMeters,
+                alignmentStrength,
+                cohesionRadiusMeters,
+                cohesionStrength
+            );
             
             swarmSimulation.UpdateAllDrones(deltaTimeSeconds);
         }

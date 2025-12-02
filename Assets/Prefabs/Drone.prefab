@@ -128,6 +128,7 @@ MonoBehaviour:
   initialPositionMeters: {x: 0, y: 1, z: 0}
   initialVelocityMetersPerSecond: {x: 0, y: 0, z: 5}
   initialForwardDirection: {x: 0, y: 0, z: 1}
+  useLocalSimulation: 0
   enableOrbitTestPattern: 0
   orbitCenterPositionMeters: {x: 0, y: 0, z: 0}
   orbitRadiusMeters: 10
