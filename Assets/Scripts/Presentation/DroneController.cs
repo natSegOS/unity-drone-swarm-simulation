@@ -30,6 +30,12 @@ namespace DroneSwarmSimulation.Presentation
         [SerializeField]
         private Vector3 initialForwardDirection = Vector3.forward;
 
+        [Header("Simulation Mode")]
+
+        [Tooltip("If true, thjis controller drives its own simulation locally. If false, it expects its DroneState to be updated externally")]
+        [SerializeField]
+        private bool useLocalSimulation = false;
+
         [Header("Test Movement - Orbit")]
         
         [Tooltip("Enable a simple orbiting test pattern around a fixed point")]
@@ -72,7 +78,7 @@ namespace DroneSwarmSimulation.Presentation
 
         private void Awake()
         {
-            if (droneState == null)
+            if (droneState == null && useLocalSimulation)
             {
                 transform.position = initialPositionMeters;
 
@@ -83,37 +89,23 @@ namespace DroneSwarmSimulation.Presentation
                     initialForwardDirection
                 );
             }
-
-            if (enableOrbitTestPattern)
-            {
-                // Initialize orbit starting angle based on initial position
-                Vector3 flatFromCenter = transform.position - new Vector3(
-                    orbitCenterPositionMeters.x,
-                    transform.position.y,
-                    orbitCenterPositionMeters.z
-                );
-
-                if (flatFromCenter.sqrMagnitude > 0.0001f)
-                {
-                    currentOrbitAngleDegrees = Mathf.Atan2(flatFromCenter.x, flatFromCenter.z) * Mathf.Rad2Deg;
-                }
-                else
-                {
-                    currentOrbitAngleDegrees = 0f;
-                }
-            }
         }
 
         private void Update()
         {
+            if (droneState == null) return;
+
             float deltaTimeSeconds = Time.deltaTime;
 
-            if (enableOrbitTestPattern)
+            if (useLocalSimulation)
             {
-                UpdateOrbitTestPattern(deltaTimeSeconds);
-            }
+                if (enableOrbitTestPattern)
+                {
+                    UpdateOrbitTestPattern(deltaTimeSeconds);
+                }
 
-            droneState.UpdateState(deltaTimeSeconds);
+                droneState.UpdateState(deltaTimeSeconds);
+            }
 
             transform.position = droneState.positionMeters;
             transform.forward = droneState.forwardDirection;

@@ -38,6 +38,32 @@ namespace DroneSwarmSimulation.Presentation
         [SerializeField]
         private float initialSpawnSpeedMetersPerSecond = 5f;
 
+        [Header("Flocking Parameters")]
+
+        [Tooltip("Radius within which neighbors contribute to separation, in meters")]
+        [SerializeField]
+        private float separationRadiusMeters = 5f;
+
+        [Tooltip("Strength of separation steering. Higher values push drones apart more aggressively")]
+        [SerializeField]
+        private float separationStrength = 1f;
+
+        [Tooltip("Radius within which neighbors contribute to alignment, in meters")]
+        [SerializeField]
+        private float alignmentRadiusMeters = 8f;
+
+        [Tooltip("Strength of alignment steering. Higher values make drones match neighbor direction faster")]
+        [SerializeField]
+        private float alignmentStrength = 0.5f;
+
+        [Tooltip("Radius within which neighbors contribute to cohesion, in meters")]
+        [SerializeField]
+        private float cohesionRadiusMeters = 10f;
+
+        [Tooltip("Strength of cohesion steering. Higher values pull drones toward neighbor centers more strongly")]
+        [SerializeField]
+        private float cohesionStrength = 0.3f;
+
         /// <summary>
         /// Core simulation object that owns and updates all DroneStates
         /// </summary>
