@@ -213,6 +213,21 @@ namespace DroneSwarmSimulation.Core.Simulation
                 currentDrone.velocityMetersPerSecond += cohesionSteering * cohesionStrength;
             }
         }
+        
+        public void ApplyFlockingToAllDrones(
+            float separationRadiusMeters,
+            float separationStrength,
+            float alignmentRadiusMeters,
+            float alignmentStrength,
+            float cohesionRadiusMeters,
+            float cohesionStrength)
+        {
+            if (droneStates.Count == 0) return;
+            
+            ApplySeparationToAllDrones(separationRadiusMeters, separationStrength);
+            ApplyAlignmentToAllDrones(alignmentRadiusMeters, alignmentStrength);
+            ApplyCohesionToAllDrones(cohesionRadiusMeters, cohesionStrength);
+        }
 
         /// <summary>
         /// Advances the simulation state of all drones in the swarm
