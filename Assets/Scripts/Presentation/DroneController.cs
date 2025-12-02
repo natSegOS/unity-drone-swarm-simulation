@@ -30,6 +30,12 @@ namespace DroneSwarmSimulation.Presentation
         [SerializeField]
         private Vector3 initialForwardDirection = Vector3.forward;
 
+        [Header("Simulation Mode")]
+
+        [Tooltip("If true, thjis controller drives its own simulation locally. If false, it expects its DroneState to be updated externally")]
+        [SerializeField]
+        private bool useLocalSimulation = false;
+
         [Header("Test Movement - Orbit")]
         
         [Tooltip("Enable a simple orbiting test pattern around a fixed point")]
@@ -56,47 +62,50 @@ namespace DroneSwarmSimulation.Presentation
 
         private DroneState droneState;
 
+        public void Initialize(DroneState assignedState)
+        {
+            droneState = assignedState;
+
+            if (droneState == null)
+            {
+                Debug.LogWarning("DroneController.Initialize called with a null DroneState");
+                return;
+            }
+
+            transform.position = droneState.positionMeters;
+            transform.forward = droneState.forwardDirection;
+        }
+
         private void Awake()
         {
-            transform.position = initialPositionMeters;
-
-            droneState = new DroneState(
-                droneIdentifier,
-                initialPositionMeters,
-                initialVelocityMetersPerSecond,
-                initialForwardDirection
-            );
-
-            if (enableOrbitTestPattern)
+            if (droneState == null && useLocalSimulation)
             {
-                // Initialize orbit starting angle based on initial position
-                Vector3 flatFromCenter = transform.position - new Vector3(
-                    orbitCenterPositionMeters.x,
-                    transform.position.y,
-                    orbitCenterPositionMeters.z
-                );
+                transform.position = initialPositionMeters;
 
-                if (flatFromCenter.sqrMagnitude > 0.0001f)
-                {
-                    currentOrbitAngleDegrees = Mathf.Atan2(flatFromCenter.x, flatFromCenter.z) * Mathf.Rad2Deg;
-                }
-                else
-                {
-                    currentOrbitAngleDegrees = 0f;
-                }
+                droneState = new DroneState(
+                    droneIdentifier,
+                    initialPositionMeters,
+                    initialVelocityMetersPerSecond,
+                    initialForwardDirection
+                );
             }
         }
 
         private void Update()
         {
+            if (droneState == null) return;
+
             float deltaTimeSeconds = Time.deltaTime;
 
-            if (enableOrbitTestPattern)
+            if (useLocalSimulation)
             {
-                UpdateOrbitTestPattern(deltaTimeSeconds);
-            }
+                if (enableOrbitTestPattern)
+                {
+                    UpdateOrbitTestPattern(deltaTimeSeconds);
+                }
 
-            droneState.UpdateState(deltaTimeSeconds);
+                droneState.UpdateState(deltaTimeSeconds);
+            }
 
             transform.position = droneState.positionMeters;
             transform.forward = droneState.forwardDirection;
