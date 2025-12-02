@@ -58,8 +58,3 @@ namespace DroneSwarmSimulation.Core.Simulation
         }
     }
 }
-
-public class SwarmSimulation
-{
-    
-}

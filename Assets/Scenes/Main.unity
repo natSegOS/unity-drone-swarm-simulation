@@ -392,6 +392,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 564175811}
+  - component: {fileID: 564175812}
   m_Layer: 0
   m_Name: AppRoot
   m_TagString: Untagged
@@ -414,6 +415,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &564175812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564175810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 888930312821d413bbb952942f162311, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DroneSwarmSimulation.Presentation.SwarmManager
+  dronePrefab: {fileID: 0}
+  initialDroneCount: 10
+  randomSeed: 12345
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,6 +515,11 @@ MonoBehaviour:
   initialPositionMeters: {x: 0, y: 1, z: 0}
   initialVelocityMetersPerSecond: {x: 0, y: 0, z: 5}
   initialForwardDirection: {x: 0, y: 0, z: 1}
+  enableOrbitTestPattern: 1
+  orbitCenterPositionMeters: {x: 0, y: 0, z: 0}
+  orbitRadiusMeters: 10
+  orbitAngularSpeedDegreesPerSecond: 30
+  orbitHeightMeters: 5
 --- !u!135 &926590033
 SphereCollider:
   m_ObjectHideFlags: 0
