@@ -101,3 +101,7 @@ InitTestScene*.unity*
 .idea
 .idea/
 *.sln.DotSettings
+
+.vscode
+.vscode/
+*.slnx
