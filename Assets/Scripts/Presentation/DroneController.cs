@@ -56,16 +56,33 @@ namespace DroneSwarmSimulation.Presentation
 
         private DroneState droneState;
 
+        public void Initialize(DroneState assignedState)
+        {
+            droneState = assignedState;
+
+            if (droneState == null)
+            {
+                Debug.LogWarning("DroneController.Initialize called with a null DroneState");
+                return;
+            }
+
+            transform.position = droneState.positionMeters;
+            transform.forward = droneState.forwardDirection;
+        }
+
         private void Awake()
         {
-            transform.position = initialPositionMeters;
+            if (droneState == null)
+            {
+                transform.position = initialPositionMeters;
 
-            droneState = new DroneState(
-                droneIdentifier,
-                initialPositionMeters,
-                initialVelocityMetersPerSecond,
-                initialForwardDirection
-            );
+                droneState = new DroneState(
+                    droneIdentifier,
+                    initialPositionMeters,
+                    initialVelocityMetersPerSecond,
+                    initialForwardDirection
+                );
+            }
 
             if (enableOrbitTestPattern)
             {
