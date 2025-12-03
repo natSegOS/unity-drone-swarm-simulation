@@ -428,7 +428,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DroneSwarmSimulation.Presentation.SwarmManager
   dronePrefab: {fileID: 6126335643360667900, guid: da4c4c6a961b44baf91cf1b91bf50199, type: 3}
-  initialDroneCount: 60
+  initialDroneCount: 30
   randomSeed: 12345
   spawnAreaCenterMeters: {x: 0, y: 5, z: 0}
   spawnAreaSizeMeters: {x: 50, y: 10, z: 50}
@@ -439,6 +439,11 @@ MonoBehaviour:
   alignmentStrength: 0.3
   cohesionRadiusMeters: 10
   cohesionStrength: 0.3
+  drawNeighborRadiusGizmos: 1
+  drawSeparationVectors: 1
+  drawAlignmentVectors: 1
+  drawCohesionVectors: 1
+  gizmoVectorScale: 1
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
