@@ -64,6 +64,28 @@ namespace DroneSwarmSimulation.Presentation
         [SerializeField]
         private float cohesionStrength = 0.3f;
 
+        [Header("Debug Gizmos")]
+
+        [Tooltip("Draw neighbor radius gizmos for each drone")]
+        [SerializeField]
+        private bool drawNeighborRadiusGizmos = true;
+
+        [Tooltip("Draw separation steering vectors for each drone")]
+        [SerializeField]
+        private bool drawSeparationVectors = true;
+
+        [Tooltip("Draw alignment steering vectors for each drone")]
+        [SerializeField]
+        private bool drawAlignmentVectors = true;
+
+        [Tooltip("Draw cohesion steering vectors for each drone")]
+        [SerializeField]
+        private bool drawCohesionVectors = true;
+
+        [Tooltip("Scale factor applied to steering vectors when drawing gizmos")]
+        [SerializeField]
+        private float gizmoVectorScale = 1.0f;
+
         /// <summary>
         /// Core simulation object that owns and updates all DroneStates
         /// </summary>
@@ -148,6 +170,62 @@ namespace DroneSwarmSimulation.Presentation
             );
             
             swarmSimulation.UpdateAllDrones(deltaTimeSeconds);
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (swarmSimulation == null) return;
+
+            var states = swarmSimulation.DroneStates;
+            if (states == null || states.Count == 0) return;
+
+            for (int i = 0; i < states.Count; i++)
+            {
+                DroneState state = states[i];
+                Vector3 position = state.positionMeters;
+
+                if (drawNeighborRadiusGizmos)
+                {
+                    if (separationRadiusMeters > 0f)
+                    {
+                        Gizmos.color = Color.red;
+                        Gizmos.DrawWireSphere(position, separationRadiusMeters);
+                    }
+
+                    if (alignmentRadiusMeters > 0f)
+                    {
+                        Gizmos.color = Color.green;
+                        Gizmos.DrawWireSphere(position, alignmentRadiusMeters);
+                    }
+
+                    if (cohesionRadiusMeters > 0f)
+                    {
+                        Gizmos.color = Color.blue;
+                        Gizmos.DrawWireSphere(position, cohesionRadiusMeters);
+                    }
+                }
+
+                if (drawSeparationVectors && state.lastSeparationSteeringMetersPerSecond != Vector3.zero)
+                {
+                    Gizmos.color = Color.red;
+                    Vector3 end = position + state.lastSeparationSteeringMetersPerSecond * gizmoVectorScale;
+                    Gizmos.DrawLine(position, end);
+                }
+
+                if (drawAlignmentVectors && state.lastAlignmentSteeringMetersPerSecond != Vector3.zero)
+                {
+                    Gizmos.color = Color.green;
+                    Vector3 end = position + state.lastAlignmentSteeringMetersPerSecond * gizmoVectorScale;
+                    Gizmos.DrawLine(position, end);
+                }
+
+                if (drawCohesionVectors && state.lastCohesionSteeringMetersPerSecond != Vector3.zero)
+                {
+                    Gizmos.color = Color.blue;
+                    Vector3 end = position + state.lastCohesionSteeringMetersPerSecond * gizmoVectorScale;
+                    Gizmos.DrawLine(position, end);
+                }
+            }
         }
     }
 }
