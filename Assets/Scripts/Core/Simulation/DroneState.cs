@@ -28,6 +28,21 @@ namespace DroneSwarmSimulation.Core.Simulation
         public Vector3 forwardDirection;
 
         /// <summary>
+        /// Debug-only: last separation steering applied to this drone, in meters per second
+        /// </summary>
+        public Vector3 lastSeparationSteeringMetersPerSecond;
+
+        /// <summary>
+        /// Debug-only: last alignment steering applied to this drone, in meters per second
+        /// </summary>
+        public Vector3 lastAlignmentSteeringMetersPerSecond;
+
+        /// <summary>
+        /// Debug-only: last cohesion steering applied to this drone, in meters per second
+        /// </summary>
+        public Vector3 lastCohesionSteeringMetersPerSecond;
+
+        /// <summary>
         /// Creates a new DroneState with the givien initial conditions
         /// </summary>
         /// <param name="droneIdentifier">Logical ID used for debugging and tracking</param>
@@ -53,6 +68,10 @@ namespace DroneSwarmSimulation.Core.Simulation
             {
                 this.forwardDirection = initialForwardDirection;
             }
+
+            lastSeparationSteeringMetersPerSecond = Vector3.zero;
+            lastAlignmentSteeringMetersPerSecond = Vector3.zero;
+            lastCohesionSteeringMetersPerSecond = Vector3.zero;
         }
 
         /// <summary>
@@ -68,6 +87,16 @@ namespace DroneSwarmSimulation.Core.Simulation
             {
                 forwardDirection = velocityMetersPerSecond.normalized;
             }
+        }
+
+        /// <summary>
+        /// Clears per-frame debug steering values. Intended to be called once per flocking step
+        /// </summary>
+        public void ClearDebugSteering()
+        {
+            lastSeparationSteeringMetersPerSecond = Vector3.zero;
+            lastAlignmentSteeringMetersPerSecond = Vector3.zero;
+            lastCohesionSteeringMetersPerSecond = Vector3.zero;
         }
     }
 }

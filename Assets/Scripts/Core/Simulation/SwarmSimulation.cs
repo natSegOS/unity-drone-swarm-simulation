@@ -95,7 +95,10 @@ namespace DroneSwarmSimulation.Core.Simulation
                 if (neighborCount > 0)
                 {
                     accumulatedSeparation /= neighborCount;
-                    currentDrone.velocityMetersPerSecond += accumulatedSeparation * separationStrength;
+                    Vector3 steering = accumulatedSeparation * separationStrength;
+
+                    currentDrone.velocityMetersPerSecond += steering;
+                    currentDrone.lastSeparationSteeringMetersPerSecond = steering;
                 }
             }
         }
@@ -151,8 +154,10 @@ namespace DroneSwarmSimulation.Core.Simulation
                 
                 Vector3 desiredVelocity = desiredDirection * currentSpeedMetersPerSecond;
                 Vector3 alignmentSteering = desiredVelocity - currentVelocity;
+                Vector3 steering = alignmentSteering * alignmentStrength;
                 
-                currentDrone.velocityMetersPerSecond += alignmentSteering * alignmentStrength;
+                currentDrone.velocityMetersPerSecond += steering;
+                currentDrone.lastAlignmentSteeringMetersPerSecond = steering;
             }
         }
         
@@ -209,8 +214,10 @@ namespace DroneSwarmSimulation.Core.Simulation
                 
                 Vector3 desiredVelocity = desiredDirection * currentSpeedMetersPerSecond;
                 Vector3 cohesionSteering = desiredVelocity - currentVelocity;
+                Vector3 steering = cohesionSteering * cohesionStrength;
                 
-                currentDrone.velocityMetersPerSecond += cohesionSteering * cohesionStrength;
+                currentDrone.velocityMetersPerSecond += steering;
+                currentDrone.lastCohesionSteeringMetersPerSecond = steering;
             }
         }
         
@@ -223,6 +230,11 @@ namespace DroneSwarmSimulation.Core.Simulation
             float cohesionStrength)
         {
             if (droneStates.Count == 0) return;
+
+            for (int i = 0; i < droneStates.Count; i++)
+            {
+                droneStates[i].ClearDebugSteering();
+            }
             
             ApplySeparationToAllDrones(separationRadiusMeters, separationStrength);
             ApplyAlignmentToAllDrones(alignmentRadiusMeters, alignmentStrength);
