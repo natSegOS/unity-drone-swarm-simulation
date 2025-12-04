@@ -1,0 +1,107 @@
+{
+    "version": 1,
+    "name": "FormationActions",
+    "maps": [
+        {
+            "name": "Main",
+            "id": "34026e76-a242-4592-ab72-a96d3debd41c",
+            "actions": [
+                {
+                    "name": "DisableFormation",
+                    "type": "Button",
+                    "id": "9128015a-ba52-44f7-a906-c209bd7e8b1d",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "CircleFormation",
+                    "type": "Button",
+                    "id": "f48c855a-5bee-4591-848f-26f7d3b978f1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LineFormation",
+                    "type": "Button",
+                    "id": "750294d8-606e-4140-9bb6-91355c863d7e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ArrowFormation",
+                    "type": "Button",
+                    "id": "fbc9d40e-8220-408d-a073-49df72488c53",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "011dafbf-9b03-4c9f-b6f8-f26b000fc3f2",
+                    "path": "<Keyboard>/0",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "DisableFormation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3d69c37a-5e6c-43f9-ba0f-744628d1ca9c",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "CircleFormation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "decd78d5-4620-4862-b980-3188b43f7a19",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "LineFormation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "443bce67-1c87-42f7-9986-9b370d7eeea9",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard",
+                    "action": "ArrowFormation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": [
+        {
+            "name": "Keyboard",
+            "bindingGroup": "Keyboard",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
+}

@@ -11,6 +11,12 @@ namespace DroneSwarmSimulation.Presentation
     /// </summary>
     public class SwarmManager : MonoBehaviour
     {
+        [Header("Simulation")]
+
+        [Tooltip("Multiplier applied to Time.deltaTime when updating the swarm simulation. Values greater than 1 speed up the simulation")]
+        [SerializeField]
+        private float simulationTimeScale = 1.0f;
+
         [Header("Swarm Setup")]
         
         [Tooltip("Prefab used to spawn individual drone GameObjects")]
@@ -181,7 +187,7 @@ namespace DroneSwarmSimulation.Presentation
         {
             if (swarmSimulation == null) return;
 
-            float deltaTimeSeconds = Time.deltaTime;
+            float deltaTimeSeconds = Time.deltaTime * simulationTimeScale;
 
             float clampedFormationWeight = Mathf.Clamp01(formationWeight);
             float flockingWeight = 1f - clampedFormationWeight;
