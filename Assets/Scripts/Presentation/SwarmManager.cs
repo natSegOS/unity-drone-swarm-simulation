@@ -11,6 +11,12 @@ namespace DroneSwarmSimulation.Presentation
     /// </summary>
     public class SwarmManager : MonoBehaviour
     {
+        [Header("Simulation")]
+
+        [Tooltip("Multiplier applied to Time.deltaTime when updating the swarm simulation. Values greater than 1 speed up the simulation")]
+        [SerializeField]
+        private float simulationTimeScale = 1.0f;
+
         [Header("Swarm Setup")]
         
         [Tooltip("Prefab used to spawn individual drone GameObjects")]
@@ -112,6 +118,7 @@ namespace DroneSwarmSimulation.Presentation
         /// Core simulation object that owns and updates all DroneStates
         /// </summary>
         private SwarmSimulation swarmSimulation;
+        public SwarmSimulation SwarmSimulation => swarmSimulation;
 
         private void Awake()
         {
@@ -180,7 +187,7 @@ namespace DroneSwarmSimulation.Presentation
         {
             if (swarmSimulation == null) return;
 
-            float deltaTimeSeconds = Time.deltaTime;
+            float deltaTimeSeconds = Time.deltaTime * simulationTimeScale;
 
             float clampedFormationWeight = Mathf.Clamp01(formationWeight);
             float flockingWeight = 1f - clampedFormationWeight;
@@ -236,6 +243,16 @@ namespace DroneSwarmSimulation.Presentation
                 anchorPosition = transform.position;
                 anchorRotation = transform.rotation;
             }
+        }
+
+        /// <summary>
+        /// Sets the blend weight between flocking and formation.
+        /// Value will be clamped to the [0, 1] range
+        /// </summary>
+        /// <param name="weight">Desired formation weight in [0, 1]</param>
+        public void SetFormationWeight(float weight)
+        {
+            formationWeight = Mathf.Clamp01(weight);
         }
 
         private void OnDrawGizmosSelected()

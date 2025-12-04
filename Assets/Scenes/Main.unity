@@ -393,6 +393,8 @@ GameObject:
   m_Component:
   - component: {fileID: 564175811}
   - component: {fileID: 564175812}
+  - component: {fileID: 564175813}
+  - component: {fileID: 564175814}
   m_Layer: 0
   m_Name: AppRoot
   m_TagString: Untagged
@@ -427,8 +429,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 888930312821d413bbb952942f162311, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DroneSwarmSimulation.Presentation.SwarmManager
+  simulationTimeScale: 10
   dronePrefab: {fileID: 6126335643360667900, guid: da4c4c6a961b44baf91cf1b91bf50199, type: 3}
-  initialDroneCount: 30
+  initialDroneCount: 60
   randomSeed: 12345
   spawnAreaCenterMeters: {x: 0, y: 5, z: 0}
   spawnAreaSizeMeters: {x: 50, y: 10, z: 50}
@@ -439,11 +442,131 @@ MonoBehaviour:
   alignmentStrength: 0.3
   cohesionRadiusMeters: 10
   cohesionStrength: 0.3
+  formationWeight: 0.5
+  formationStrength: 1
+  formationAnchorTransform: {fileID: 0}
   drawNeighborRadiusGizmos: 1
   drawSeparationVectors: 1
   drawAlignmentVectors: 1
   drawCohesionVectors: 1
   gizmoVectorScale: 1
+--- !u!114 &564175813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564175810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 340cff160ba7a4ff38550a9d1f8c3731, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DroneSwarmSimulation.Presentation.FormationCommandController
+  swarmManager: {fileID: 564175812}
+  targetFormationWeight: 1
+  circleRadiusMeters: 20
+  lineSpacingMeters: 8
+  arrowShaftLengthMeters: 60
+  arrowHeadLengthMeters: 30
+  arrowHeadWidthMeters: 40
+--- !u!114 &564175814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564175810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: f5ff0f6591d9b4c43b03c6d11bf4fa79, type: 3}
+  m_NotificationBehavior: 2
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 564175813}
+        m_TargetAssemblyTypeName: DroneSwarmSimulation.Presentation.FormationCommandController,
+          Assembly-CSharp
+        m_MethodName: OnDisableFormation
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 9128015a-ba52-44f7-a906-c209bd7e8b1d
+    m_ActionName: 'Main/DisableFormation[/Keyboard/0]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 564175813}
+        m_TargetAssemblyTypeName: DroneSwarmSimulation.Presentation.FormationCommandController,
+          Assembly-CSharp
+        m_MethodName: OnCircleFormation
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: f48c855a-5bee-4591-848f-26f7d3b978f1
+    m_ActionName: 'Main/CircleFormation[/Keyboard/1]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 564175813}
+        m_TargetAssemblyTypeName: DroneSwarmSimulation.Presentation.FormationCommandController,
+          Assembly-CSharp
+        m_MethodName: OnLineFormation
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 750294d8-606e-4140-9bb6-91355c863d7e
+    m_ActionName: 'Main/LineFormation[/Keyboard/2]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 564175813}
+        m_TargetAssemblyTypeName: DroneSwarmSimulation.Presentation.FormationCommandController,
+          Assembly-CSharp
+        m_MethodName: OnArrowFormation
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: fbc9d40e-8220-408d-a073-49df72488c53
+    m_ActionName: 'Main/ArrowFormation[/Keyboard/3]'
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: Keyboard
+  m_DefaultActionMap: Main
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
