@@ -112,6 +112,7 @@ namespace DroneSwarmSimulation.Presentation
         /// Core simulation object that owns and updates all DroneStates
         /// </summary>
         private SwarmSimulation swarmSimulation;
+        public SwarmSimulation SwarmSimulation => swarmSimulation;
 
         private void Awake()
         {
@@ -236,6 +237,16 @@ namespace DroneSwarmSimulation.Presentation
                 anchorPosition = transform.position;
                 anchorRotation = transform.rotation;
             }
+        }
+
+        /// <summary>
+        /// Sets the blend weight between flocking and formation.
+        /// Value will be clamped to the [0, 1] range
+        /// </summary>
+        /// <param name="weight">Desired formation weight in [0, 1]</param>
+        public void SetFormationWeight(float weight)
+        {
+            formationWeight = Mathf.Clamp01(weight);
         }
 
         private void OnDrawGizmosSelected()
