@@ -182,16 +182,60 @@ namespace DroneSwarmSimulation.Presentation
 
             float deltaTimeSeconds = Time.deltaTime;
 
-            swarmSimulation.ApplyFlockingToAllDrones(
-                separationRadiusMeters,
-                separationStrength,
-                alignmentRadiusMeters,
-                alignmentStrength,
-                cohesionRadiusMeters,
-                cohesionStrength
-            );
+            float clampedFormationWeight = Mathf.Clamp01(formationWeight);
+            float flockingWeight = 1f - clampedFormationWeight;
+
+            if (flockingWeight > 0f)
+            {
+                swarmSimulation.ApplyFlockingToAllDrones(
+                    separationRadiusMeters,
+                    separationStrength * flockingWeight,
+                    alignmentRadiusMeters,
+                    alignmentStrength * flockingWeight,
+                    cohesionRadiusMeters,
+                    cohesionStrength * flockingWeight
+                );
+            }
+
+            if (clampedFormationWeight > 0f && activeFormationDefinition != null && activeFormationDefinition.SlotCount > 0)
+            {
+                GetFormationAnchor(out Vector3 anchorPosition, out Quaternion anchorRotation);
+
+                float effectiveFormationStrength = formationStrength * clampedFormationWeight;
+
+                swarmSimulation.ApplyFormationSteeringToAllDrones(
+                    activeFormationDefinition,
+                    anchorPosition,
+                    anchorRotation,
+                    effectiveFormationStrength
+                );
+            }
             
             swarmSimulation.UpdateAllDrones(deltaTimeSeconds);
+        }
+
+        /// <summary>
+        /// Sets the active formation definition used for formation steering.
+        /// Passing null disables formation steering until a new formation is set.
+        /// </summary>
+        /// <param name="formationDefinition"></param>
+        public void SetActiveFormation(FormationDefinition formationDefinition)
+        {
+            activeFormationDefinition = formationDefinition;
+        }
+
+        private void GetFormationAnchor(out Vector3 anchorPosition, out Quaternion anchorRotation)
+        {
+            if (formationAnchorTransform != null)
+            {
+                anchorPosition = formationAnchorTransform.position;
+                anchorRotation = formationAnchorTransform.rotation;
+            }
+            else
+            {
+                anchorPosition = transform.position;
+                anchorRotation = transform.rotation;
+            }
         }
 
         private void OnDrawGizmosSelected()
