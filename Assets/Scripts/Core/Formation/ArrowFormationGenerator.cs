@@ -42,7 +42,7 @@ namespace DroneSwarmSimulation.Core.Formation
             int slotIndex = 0;
 
             // Tip slot
-            Vector3 tipOffset = new Vector3(0f, 0f, 0.25f * headLengthMeters);
+            Vector3 tipOffset = new Vector3(0f, 0f, 0.05f * headLengthMeters);
             Vector3 tipForward = Vector3.forward;
 
             slots.Add(new FormationSlot(
@@ -74,8 +74,8 @@ namespace DroneSwarmSimulation.Core.Formation
             // Head slots
             if (headSlotsTotal > 0)
             {
-                Vector3 leftArmDirection = new Vector3(-headWidthMeters, 0f, headLengthMeters).normalized;
-                Vector3 rightArmDirection = new Vector3(headWidthMeters, 0f, headLengthMeters).normalized;
+                Vector3 leftArmDirection = new Vector3(-headWidthMeters, 0f, -headLengthMeters).normalized;
+                Vector3 rightArmDirection = new Vector3(headWidthMeters, 0f, -headLengthMeters).normalized;
 
                 int segmentsPerArm = Mathf.Max(1, headSlotsPerSide);
                 float armStep = headLengthMeters / segmentsPerArm;

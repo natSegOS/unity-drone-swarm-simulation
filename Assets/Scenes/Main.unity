@@ -429,7 +429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 888930312821d413bbb952942f162311, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DroneSwarmSimulation.Presentation.SwarmManager
-  simulationTimeScale: 1
+  simulationTimeScale: 10
   dronePrefab: {fileID: 6126335643360667900, guid: da4c4c6a961b44baf91cf1b91bf50199, type: 3}
   initialDroneCount: 60
   randomSeed: 12345
@@ -442,7 +442,7 @@ MonoBehaviour:
   alignmentStrength: 0.3
   cohesionRadiusMeters: 10
   cohesionStrength: 0.3
-  formationWeight: 1
+  formationWeight: 0.5
   formationStrength: 1
   formationAnchorTransform: {fileID: 0}
   drawNeighborRadiusGizmos: 1
