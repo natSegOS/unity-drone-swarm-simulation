@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using DroneSwarmSimulation.Core.Formation;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 namespace DroneSwarmSimulation.Core.Simulation
 {
@@ -24,6 +26,9 @@ namespace DroneSwarmSimulation.Core.Simulation
         
         // minimum speed used when applying cohesion to drones with near-zero speed
         private const float minimumCohesionSpeedMetersPerSecond = 0.1f;
+
+        // minimum speed used when steering drones toward formation targets
+        private const float minimumFormationSpeedMetersPerSecond = 0.1f;
 
         /// <summary>
         /// Adds an existing DroneState instance to the swarm
@@ -239,6 +244,51 @@ namespace DroneSwarmSimulation.Core.Simulation
             ApplySeparationToAllDrones(separationRadiusMeters, separationStrength);
             ApplyAlignmentToAllDrones(alignmentRadiusMeters, alignmentStrength);
             ApplyCohesionToAllDrones(cohesionRadiusMeters, cohesionStrength);
+        }
+
+        public void ApplyFormationSteeringToAllDrones(
+            FormationDefinition formation,
+            Vector3 anchorPosition,
+            Quaternion anchorRotation,
+            float formationStrength)
+        {
+            if (droneStates.Count == 0) return;
+            if (formation == null)
+            {
+                Debug.LogWarning("ApplyFormationSteeringToAllDrones called with a null formation");
+                return;
+            }
+
+            if (formation.SlotCount == 0) return;
+            if (formationStrength <= 0) return;
+
+            int slotCount = formation.SlotCount;
+
+            for (int i = 0; i < droneStates.Count; i++)
+            {
+                DroneState currentDrone = droneStates[i];
+                Vector3 currentPosition = currentDrone.positionMeters;
+                Vector3 currentVelocity = currentDrone.velocityMetersPerSecond;
+
+                int slotIndex = i % slotCount;
+                FormationSlot slot = formation.GetSlotAt(slotIndex);
+
+                Vector3 worldTargetPosition = anchorPosition + anchorRotation * slot.localOffsetMeters;
+                Vector3 toTarget = worldTargetPosition - currentPosition;
+                if (toTarget == Vector3.zero) continue;
+
+                Vector3 desiredDirection = toTarget.normalized;
+                float currentSpeedMetersPerSecond = currentVelocity.magnitude;
+                if (currentSpeedMetersPerSecond < minimumFormationSpeedMetersPerSecond)
+                {
+                    currentSpeedMetersPerSecond = minimumFormationSpeedMetersPerSecond;
+                }
+
+                Vector3 desiredVelocity = desiredDirection * currentSpeedMetersPerSecond;
+                Vector3 formationSteering = desiredVelocity - currentVelocity;
+
+                currentDrone.velocityMetersPerSecond += formationSteering * formationStrength;
+            }
         }
 
         /// <summary>
