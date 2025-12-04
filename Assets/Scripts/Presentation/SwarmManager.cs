@@ -1,4 +1,5 @@
 using UnityEngine;
+using DroneSwarmSimulation.Core.Formation;
 using DroneSwarmSimulation.Core.Simulation;
 
 namespace DroneSwarmSimulation.Presentation
@@ -63,6 +64,27 @@ namespace DroneSwarmSimulation.Presentation
         [Tooltip("Strength of cohesion steering. Higher values pull drones toward neighbor centers more strongly")]
         [SerializeField]
         private float cohesionStrength = 0.3f;
+
+        [Header("Formation Settings")]
+
+        [Tooltip("Blend between pure flocking (0) and pure formation (1)")]
+        [Range(0f, 1f)]
+        [SerializeField]
+        private float formationWeight = 0f;
+
+        [Tooltip("Base strength of formation steering when formationWeight is 1. Actual strength is scaled by formationWeight each frame")]
+        [SerializeField]
+        private float formationStrength = 1f;
+
+        [Tooltip("Optional anchor transform used to position and orient the active formation in world space. If not assigned, the swarm manager's own transform will be used as the anchor")]
+        [SerializeField]
+        private Transform formationAnchorTransform;
+
+        /// <summary>
+        /// Currently active formation definition used when formation steering is enabled.
+        /// May be null if no formation is active
+        /// </summary>
+        private FormationDefinition activeFormationDefinition;
 
         [Header("Debug Gizmos")]
 
@@ -160,16 +182,60 @@ namespace DroneSwarmSimulation.Presentation
 
             float deltaTimeSeconds = Time.deltaTime;
 
-            swarmSimulation.ApplyFlockingToAllDrones(
-                separationRadiusMeters,
-                separationStrength,
-                alignmentRadiusMeters,
-                alignmentStrength,
-                cohesionRadiusMeters,
-                cohesionStrength
-            );
+            float clampedFormationWeight = Mathf.Clamp01(formationWeight);
+            float flockingWeight = 1f - clampedFormationWeight;
+
+            if (flockingWeight > 0f)
+            {
+                swarmSimulation.ApplyFlockingToAllDrones(
+                    separationRadiusMeters,
+                    separationStrength * flockingWeight,
+                    alignmentRadiusMeters,
+                    alignmentStrength * flockingWeight,
+                    cohesionRadiusMeters,
+                    cohesionStrength * flockingWeight
+                );
+            }
+
+            if (clampedFormationWeight > 0f && activeFormationDefinition != null && activeFormationDefinition.SlotCount > 0)
+            {
+                GetFormationAnchor(out Vector3 anchorPosition, out Quaternion anchorRotation);
+
+                float effectiveFormationStrength = formationStrength * clampedFormationWeight;
+
+                swarmSimulation.ApplyFormationSteeringToAllDrones(
+                    activeFormationDefinition,
+                    anchorPosition,
+                    anchorRotation,
+                    effectiveFormationStrength
+                );
+            }
             
             swarmSimulation.UpdateAllDrones(deltaTimeSeconds);
+        }
+
+        /// <summary>
+        /// Sets the active formation definition used for formation steering.
+        /// Passing null disables formation steering until a new formation is set.
+        /// </summary>
+        /// <param name="formationDefinition"></param>
+        public void SetActiveFormation(FormationDefinition formationDefinition)
+        {
+            activeFormationDefinition = formationDefinition;
+        }
+
+        private void GetFormationAnchor(out Vector3 anchorPosition, out Quaternion anchorRotation)
+        {
+            if (formationAnchorTransform != null)
+            {
+                anchorPosition = formationAnchorTransform.position;
+                anchorRotation = formationAnchorTransform.rotation;
+            }
+            else
+            {
+                anchorPosition = transform.position;
+                anchorRotation = transform.rotation;
+            }
         }
 
         private void OnDrawGizmosSelected()
