@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using DroneSwarmSimulation.Core.Formation;
 using DroneSwarmSimulation.Core.Obstacles;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -41,6 +43,9 @@ namespace DroneSwarmSimulation.Core.Simulation
 
         // minimum speed used when steering drones toward formation targets
         private const float minimumFormationSpeedMetersPerSecond = 0.1f;
+
+        // Small threshold used to avoid division by zero when drones are extremely close to an obstacle center
+        private const float minimumObstacleDistanceSquared = 0.0001f;
 
         /// <summary>
         /// Adds an existing DroneState instance to the swarm
@@ -300,6 +305,61 @@ namespace DroneSwarmSimulation.Core.Simulation
                 Vector3 formationSteering = desiredVelocity - currentVelocity;
 
                 currentDrone.velocityMetersPerSecond += formationSteering * formationStrength;
+            }
+        }
+
+        public void ApplyObstacleAvoidanceToAllDrones(
+            float avoidanceRadiusMeters,
+            float avoidanceStrength)
+        {
+            if (droneStates.Count == 0) return;
+
+            var obstacles = obstacleCollection.Obstacles;
+            if (obstacles == null || obstacles.Count == 0) return;
+            if (avoidanceRadiusMeters <= 0f || avoidanceStrength <= 0f) return;
+
+            for (int i = 0; i < droneStates.Count; i++)
+            {
+                DroneState currentDrone = droneStates[i];
+                Vector3 currentPosition = currentDrone.positionMeters;
+
+                Vector3 accumulatedAvoidance = Vector3.zero;
+                int influencingObstacleCount = 0;
+
+                for (int j = 0; j < obstacles.Count; j++)
+                {
+                    ObstacleDefinition obstacle = obstacles[j];
+
+                    Vector3 offsetFromObstacleToDrone = currentPosition - obstacle.centerPositionMeters;
+                    float distanceSquared = offsetFromObstacleToDrone.sqrMagnitude;
+
+                    if (distanceSquared < minimumObstacleDistanceSquared)
+                    {
+                        // Drone is extremely close to or exactly at obstacle center
+                        // Push it directly outward along an arbitrary axis to avoid NaN
+                        accumulatedAvoidance += Vector3.right;
+                        influencingObstacleCount++;
+                        continue;
+                    }
+
+                    float distance = Mathf.Sqrt(distanceSquared);
+                    float influenceRadiusMeters = avoidanceRadiusMeters + obstacle.radiusMeters;
+                    if (distance > influenceRadiusMeters) continue;
+
+                    Vector3 directionAway = offsetFromObstacleToDrone / distance;
+
+                    // 1 when at obstacle surface or closer, 0 when at outer edge of influence radius
+                    float distanceFactor = 1f - Mathf.Clamp01(distance / influenceRadiusMeters);
+
+                    accumulatedAvoidance += directionAway * distanceFactor;
+                    influencingObstacleCount++;
+                }
+
+                if (influencingObstacleCount > 0)
+                {
+                    accumulatedAvoidance /= influencingObstacleCount;
+                    currentDrone.velocityMetersPerSecond += accumulatedAvoidance * avoidanceStrength;
+                }
             }
         }
 
