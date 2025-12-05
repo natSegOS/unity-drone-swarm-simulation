@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using DroneSwarmSimulation.Core.Formation;
+using DroneSwarmSimulation.Core.Obstacles;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
+using UnityEngine.Video;
 
 namespace DroneSwarmSimulation.Core.Simulation
 {
@@ -14,9 +15,20 @@ namespace DroneSwarmSimulation.Core.Simulation
         private readonly List<DroneState> droneStates = new List<DroneState>();
 
         /// <summary>
+        /// Represents all obstacles known to the swarm simulation
+        /// Populated externally
+        /// </summary>
+        private readonly ObstacleCollection obstacleCollection = new ObstacleCollection();
+
+        /// <summary>
         /// Provides read-only access to all drone states managed by this swarm
         /// </summary>
         public IReadOnlyList<DroneState> DroneStates => droneStates;
+
+        /// <summary>
+        /// Provides read-only access to obstacle definitions known to this simulation
+        /// </summary>
+        public IReadOnlyList<ObstacleDefinition> Obstacles => obstacleCollection.Obstacles;
         
         // small threshold used to avoid division by zero when drones are extremely close
         private const float minimumNeighborDistanceSquared = 0.0001f;
@@ -289,6 +301,102 @@ namespace DroneSwarmSimulation.Core.Simulation
 
                 currentDrone.velocityMetersPerSecond += formationSteering * formationStrength;
             }
+        }
+
+        /// <summary>
+        /// Attempts to find the closest obstacle to the given world-space position
+        /// </summary>
+        /// <param name="queryPositionMeters">World-space query position, in meters</param>
+        /// <param name="closestObstacle">The closest obstacle, if any</param>
+        /// <param name="closestDistanceMeters">Distance from the query position to the closest obstacle center</param>
+        /// <returns>True if at least one obstacle exists; false otherwise</returns>
+        public bool TryGetClosestObstacle(
+            Vector3 queryPositionMeters,
+            out ObstacleDefinition closestObstacle,
+            out float closestDistanceMeters)
+        {
+            var obstacles = obstacleCollection.Obstacles;
+            closestObstacle = null;
+            closestDistanceMeters = 0f;
+            if (obstacles == null || obstacles.Count == 0) return false;
+
+            float bestDistanceSquared = float.MaxValue;
+            ObstacleDefinition bestObstacle = null;
+
+            for (int i = 0; i < obstacles.Count; i++)
+            {
+                ObstacleDefinition obstacle = obstacles[i];
+                Vector3 offset = obstacle.centerPositionMeters - queryPositionMeters;
+                float distanceSquared = offset.sqrMagnitude;
+
+                if (distanceSquared < bestDistanceSquared)
+                {
+                    bestDistanceSquared = distanceSquared;
+                    bestObstacle = obstacle;
+                }
+            }
+
+            if (bestObstacle == null) return false;
+
+            closestObstacle = bestObstacle;
+            closestDistanceMeters = Mathf.Sqrt(bestDistanceSquared);
+            return true;
+        }
+
+        /// <summary>
+        /// Populates the given list with all obstacles whose centers are within the specified radius of the query position.
+        /// The results list is not cleared by this method; callers should clear it first if needed
+        /// </summary>
+        /// <param name="queryPositionMeters">World-space query position, in meters</param>
+        /// <param name="radiusMeters">Search radius in meters</param>
+        /// <param name="results">List to populate with matching obstacles</param>
+        public void GetObstaclesWithinRadius(
+            Vector3 queryPositionMeters,
+            float radiusMeters,
+            List<ObstacleDefinition> results)
+        {
+            if (results == null)
+            {
+                Debug.LogWarning("GetObstaclesWithinRadius called with a null results list");
+                return;
+            }
+
+            var obstacles = obstacleCollection.Obstacles;
+            if (obstacles == null || obstacles.Count == 0) return;
+            if (radiusMeters <= 0) return;
+
+            float radiusSquared = radiusMeters * radiusMeters;
+
+            for (int i = 0; i < obstacles.Count; i++)
+            {
+                ObstacleDefinition obstacle = obstacles[i];
+                Vector3 offset = obstacle.centerPositionMeters - queryPositionMeters;
+                float distanceSquared = offset.sqrMagnitude;
+
+                if (distanceSquared <= radiusSquared)
+                {
+                    results.Add(obstacle);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds an obstacle definition to the simulation's obstacle collection
+        /// </summary>
+        /// <param name="obstacle"></param>
+        public void AddObstacle(ObstacleDefinition obstacle)
+        {
+            obstacleCollection.AddObstacle(obstacle);
+        }
+
+        /// <summary>
+        /// Removes an obstacle definitino from the simulation's obstacle collection
+        /// </summary>
+        /// <param name="obstacle"></param>
+        /// <returns></returns>
+        public bool RemoveObstacle(ObstacleDefinition obstacle)
+        {
+            return obstacleCollection.RemoveObstacle(obstacle);
         }
 
         /// <summary>
