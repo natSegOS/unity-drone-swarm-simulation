@@ -92,6 +92,16 @@ namespace DroneSwarmSimulation.Presentation
         /// </summary>
         private FormationDefinition activeFormationDefinition;
 
+        [Header("Obstacle Avoidance")]
+
+        [Tooltip("Base radius around each drone within which obstacles contrinbute to avoidance, in meters")]
+        [SerializeField]
+        private float obstacleAvoidanceRadiusMeters = 15f;
+
+        [Tooltip("Strength of obstacle avoidance steering. Higher values push drones away from obstacles more aggressively")]
+        [SerializeField]
+        private float obstacleAvoidanceStrength = 1.5f;
+
         [Header("Debug Gizmos")]
 
         [Tooltip("Draw neighbor radius gizmos for each drone")]
