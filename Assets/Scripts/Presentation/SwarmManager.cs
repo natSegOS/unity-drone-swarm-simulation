@@ -1,6 +1,7 @@
 using UnityEngine;
 using DroneSwarmSimulation.Core.Formation;
 using DroneSwarmSimulation.Core.Simulation;
+using DroneSwarmSimulation.Core.Obstacles;
 
 namespace DroneSwarmSimulation.Presentation
 {
@@ -227,8 +228,37 @@ namespace DroneSwarmSimulation.Presentation
                     effectiveFormationStrength
                 );
             }
+
+            if (obstacleAvoidanceRadiusMeters > 0f && obstacleAvoidanceStrength > 0f)
+            {
+                swarmSimulation.ApplyObstacleAvoidanceToAllDrones(
+                    obstacleAvoidanceRadiusMeters,
+                    obstacleAvoidanceStrength
+                );
+            }
             
             swarmSimulation.UpdateAllDrones(deltaTimeSeconds);
+        }
+
+        /// <summary>
+        /// Registers an obstacle definition with the swarm simulation.
+        /// Intended to be called by obstacle MonoBehaviours
+        /// </summary>
+        /// <param name="obstacle"></param>
+        public void RegisterObstacle(ObstacleDefinition obstacle)
+        {
+            if (swarmSimulation == null) return;
+            swarmSimulation.AddObstacle(obstacle);
+        }
+
+        /// <summary>
+        /// Unregisters an obstacle definition from the swarm simulation
+        /// </summary>
+        /// <param name="obstacle"></param>
+        public void UnregisterObstacle(ObstacleDefinition obstacle)
+        {
+            if (swarmSimulation == null) return;
+            swarmSimulation.RemoveObstacle(obstacle);
         }
 
         /// <summary>
