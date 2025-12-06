@@ -32,7 +32,12 @@ namespace DroneSwarmSimulation.Presentation
         {
             if (swarmManager == null)
             {
-                Debug.LogWarning($"ObstacleComponent on '{gameObject.name}' does not have a SwarmManager set. Obstacle will not participate in avoidance until a SwarmManager is set.");
+                swarmManager = FindAnyObjectByType<SwarmManager>();
+
+                if (swarmManager == null)
+                {
+                    Debug.LogWarning($"ObstacleComponent on '{gameObject.name}' does not have a SwarmManager set. Obstacle will not participate in avoidance until a SwarmManager is set.");
+                }
             }
 
             if (string.IsNullOrWhiteSpace(obstacleIdentifier))
